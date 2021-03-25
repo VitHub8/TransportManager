@@ -3,66 +3,121 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <utility>
 #include <variant>
 #include <vector>
+#include <iomanip>
+
 
 namespace Json {
 
-  class Node;
-  using Dict = std::map<std::string, Node>;
+    class Node : std::variant<std::vector<Node>,
+                              std::map<std::string, Node>,
+                              int,
+                              double,
+                              bool,
+                              std::string> {
+    public:
+        using variant::variant;
 
-  class Node : std::variant<std::vector<Node>, Dict, bool, int, double, std::string> {
-  public:
-    using variant::variant;
-    const variant& GetBase() const { return *this; }
+        const auto& AsArray() const {
+            return std::get<std::vector<Node>>(*this);
+        }
+        const auto& AsMap() const {
+            return std::get<std::map<std::string, Node>>(*this);
+        }
+        int AsInt() const {
+            return std::get<int>(*this);
+        }
+        bool AsBool() const {
+            return std::get<bool>(*this);
+        }
 
-    const auto& AsArray() const { return std::get<std::vector<Node>>(*this); }
-    const auto& AsMap() const { return std::get<Dict>(*this); }
-    bool AsBool() const { return std::get<bool>(*this); }
-    int AsInt() const { return std::get<int>(*this); }
-    double AsDouble() const {
-        return std::holds_alternative<double>(*this) ? std::get<double>(*this) : std::get<int>(*this);
-    }
-    const auto& AsString() const { return std::get<std::string>(*this); }
-  };
+        double AsDouble() const {
+            if (std::holds_alternative<double>(*this)) {
+                return std::get<double>(*this);
+            }
+            if (std::holds_alternative<int>(*this)) {
+                return static_cast<double>(AsInt());
+            }
+        }
 
-  class Document {
-  public:
-    explicit Document(Node root) : root(move(root)) {}
+        const auto& AsString() const {
+            return std::get<std::string>(*this);
+        }
 
-    const Node& GetRoot() const {
-      return root;
-    }
+        void Print(std::ostream& os) const {
+            if (std::holds_alternative<int>(*this)) {
+                PrintI(os, AsInt());
+            } else if (std::holds_alternative<double>(*this)) {
+                PrintD(os, AsDouble());
+            } else if (std::holds_alternative<std::string>(*this)) {
+                PrintS(os, AsString());
+            } else if (std::holds_alternative<std::map<std::string, Node>>(*this)) {
+                PrintM(os, AsMap());
+            } else if (std::holds_alternative<std::vector<Node>>(*this)) {
+                PrintV(os, AsArray());
+            }
+        }
 
-  private:
-    Node root;
-  };
+    private:
 
-  Node LoadNode(std::istream& input);
+        static void PrintM(std::ostream& os, const std::map<std::string, Node>& map) {
+            using namespace std;
+            os << "{"s;
+            bool first = true;
+            for (const auto& [k, v] : map) {
+                if (!first) {
+                    os << ","s;
+                }
+                first = false;
+                os << quoted(k) << ":"s;
+                v.Print(os);
+            }
+            os << "}"s;
+        }
 
-  Document Load(std::istream& input);
+        static void PrintV(std::ostream& os, const std::vector<Node>& v) {
+            using namespace std;
+            os << "["s;
+            bool first = true;
+            for (const auto& x : v) {
+                if (!first) {
+                    os << ","s;
+                }
+                first = false;
+                x.Print(os);
+            }
+            os << "]"s;
+        }
 
-  void PrintNode(const Node& node, std::ostream& output);
+        static void PrintS(std::ostream& os, const std::string& s) {
+            using namespace std;
+            os << quoted(s);
+        }
 
-  template <typename Value>
-  void PrintValue(const Value& value, std::ostream& output) {
-    output << value;
-  }
+        static void PrintI(std::ostream& os, int num) {
+            os << std::to_string(num);
+        }
 
-  template <>
-  void PrintValue<std::string>(const std::string& value, std::ostream& output);
+        static void PrintD(std::ostream& os, double num) {
+            using namespace std;
+            os << fixed << setprecision(16) << num;
+        }
 
-  template <>
-  void PrintValue<bool>(const bool& value, std::ostream& output);
+    };
 
-  template <>
-  void PrintValue<std::vector<Node>>(const std::vector<Node>& nodes, std::ostream& output);
 
-  template <>
-  void PrintValue<Dict>(const Dict& dict, std::ostream& output);
+    class Document {
+    public:
+        explicit Document(Node root);
 
-  void Print(const Document& document, std::ostream& output);
+        const Node& GetRoot() const;
+
+    private:
+        Node root;
+    };
+
+    Document Load(std::istream& input);
+    void PrintDoc(std::ostream& os, const Document& doc);
 
 }
-
