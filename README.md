@@ -1,3 +1,4 @@
+
 # TransportManager
 This is a training C++ project for transport routes management and mapping
 
@@ -217,3 +218,5 @@ This is a training C++ project for transport routes management and mapping
         }
     ]
 }
+Пример карты на выходе:
+![image](https://user-images.githubusercontent.com/48561882/112407027-5b999e80-8d26-11eb-9809-6d907d048053.png)
