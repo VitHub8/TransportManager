@@ -7,7 +7,7 @@
 Запросы на создание объектов в базе данных задаются в виде списка в ключе base_requests входного JSON. Каждый запрос является словарём, содержащим ключ type — тип запроса, а также прочую дополнительную информацию о соответствующем объекте.
   Stop: описание остановки
   Bus: описание автобуса
-  Map: отрисовка карты в svg формате
+
 Маршрут может задаваться в одном из двух форматов:
   "is_roundtrip": false: автобус следует по списку остановок из stops от первой до последней и обратно.
   "is_roundtrip": true: кольцевой маршрут, у которого первая остановка из списка stops является конечной.
@@ -24,200 +24,171 @@
   Bus: информация об автобусе
   Stop: информация об остановке
   Route: построение маршрута между двумя остановками
-  
-Помимо запросов информации во входном JSON-файле присутствует ключ "render_settings", отвечающий за настройку отрисовки изображения svg.
 
 Пример входного JSON-файла:
 
 {
-    "routing_settings": {
-        "bus_wait_time": 2,
-        "bus_velocity": 30
+  "routing_settings": {
+    "bus_wait_time": 6,
+    "bus_velocity": 40
+  },
+  "base_requests": [
+    {
+      "type": "Bus",
+      "name": "297",
+      "stops": [
+        "Biryulyovo Zapadnoye",
+        "Biryulyovo Tovarnaya",
+        "Universam",
+        "Biryulyovo Zapadnoye"
+      ],
+      "is_roundtrip": true
     },
-    "render_settings": {
-        "width": 1200,
-        "height": 1200,
-        "padding": 50,
-        "stop_radius": 5,
-        "line_width": 14,
-        "bus_label_font_size": 20,
-        "bus_label_offset": [
-            7,
-            15
-        ],
-        "stop_label_font_size": 20,
-        "stop_label_offset": [
-            7,
-            -3
-        ],
-        "underlayer_color": [
-            255,
-            255,
-            255,
-            0.85
-        ],
-        "underlayer_width": 3,
-        "color_palette": [
-            "green",
-            [
-                255,
-                160,
-                0
-            ],
-            "red"
-        ],
-        "layers": [
-            "bus_lines",
-            "stop_points",
-            "bus_labels"
-        ]
+    {
+      "type": "Bus",
+      "name": "635",
+      "stops": [
+        "Biryulyovo Tovarnaya",
+        "Universam",
+        "Prazhskaya"
+      ],
+      "is_roundtrip": false
     },
-    "base_requests": [
-        {
-            "type": "Bus",
-            "name": "14",
-            "stops": [
-                "Улица Лизы Чайкиной",
-                "Электросети",
-                "Ривьерский мост",
-                "Гостиница Сочи",
-                "Кубанская улица",
-                "По требованию",
-                "Улица Докучаева",
-                "Улица Лизы Чайкиной"
-            ],
-            "is_roundtrip": true
-        },
-        {
-            "type": "Bus",
-            "name": "24",
-            "stops": [
-                "Улица Докучаева",
-                "Параллельная улица",
-                "Электросети",
-                "Санаторий Родина"
-            ],
-            "is_roundtrip": false
-        },
-        {
-            "type": "Bus",
-            "name": "114",
-            "stops": [
-                "Морской вокзал",
-                "Ривьерский мост"
-            ],
-            "is_roundtrip": false
-        },
-        {
-            "type": "Stop",
-            "name": "Улица Лизы Чайкиной",
-            "latitude": 43.590317,
-            "longitude": 39.746833,
-            "road_distances": {
-                "Электросети": 4300,
-                "Улица Докучаева": 2000
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Морской вокзал",
-            "latitude": 43.581969,
-            "longitude": 39.719848,
-            "road_distances": {
-                "Ривьерский мост": 850
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Электросети",
-            "latitude": 43.598701,
-            "longitude": 39.730623,
-            "road_distances": {
-                "Санаторий Родина": 4500,
-                "Параллельная улица": 1200,
-                "Ривьерский мост": 1900
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Ривьерский мост",
-            "latitude": 43.587795,
-            "longitude": 39.716901,
-            "road_distances": {
-                "Морской вокзал": 850,
-                "Гостиница Сочи": 1740
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Гостиница Сочи",
-            "latitude": 43.578079,
-            "longitude": 39.728068,
-            "road_distances": {
-                "Кубанская улица": 320
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Кубанская улица",
-            "latitude": 43.578509,
-            "longitude": 39.730959,
-            "road_distances": {
-                "По требованию": 370
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "По требованию",
-            "latitude": 43.579285,
-            "longitude": 39.733742,
-            "road_distances": {
-                "Улица Докучаева": 600
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Улица Докучаева",
-            "latitude": 43.585586,
-            "longitude": 39.733879,
-            "road_distances": {
-                "Параллельная улица": 1100
-            }
-        },
-        {
-            "type": "Stop",
-            "name": "Параллельная улица",
-            "latitude": 43.590041,
-            "longitude": 39.732886,
-            "road_distances": {}
-        },
-        {
-            "type": "Stop",
-            "name": "Санаторий Родина",
-            "latitude": 43.601202,
-            "longitude": 39.715498,
-            "road_distances": {}
-        }
-    ],
-    "stat_requests": [
-        {
-            "id": 826874078,
-            "type": "Bus",
-            "name": "14"
-        },
-        {
-            "id": 1086967114,
-            "type": "Route",
-            "from": "Морской вокзал",
-            "to": "Параллельная улица"
-        },
-        {
-            "id": 1218663236,
-            "type": "Map"
-        }
-    ]
+    {
+      "type": "Stop",
+      "road_distances": {
+        "Biryulyovo Tovarnaya": 2600
+      },
+      "longitude": 37.6517,
+      "name": "Biryulyovo Zapadnoye",
+      "latitude": 55.574371
+    },
+    {
+      "type": "Stop",
+      "road_distances": {
+        "Prazhskaya": 4650,
+        "Biryulyovo Tovarnaya": 1380,
+        "Biryulyovo Zapadnoye": 2500
+      },
+      "longitude": 37.645687,
+      "name": "Universam",
+      "latitude": 55.587655
+    },
+    {
+      "type": "Stop",
+      "road_distances": {
+        "Universam": 890
+      },
+      "longitude": 37.653656,
+      "name": "Biryulyovo Tovarnaya",
+      "latitude": 55.592028
+    },
+    {
+      "type": "Stop",
+      "road_distances": {},
+      "longitude": 37.603938,
+      "name": "Prazhskaya",
+      "latitude": 55.611717
+    }
+  ],
+  "stat_requests": [
+    {
+      "type": "Bus",
+      "name": "297",
+      "id": 1
+    },
+    {
+      "type": "Bus",
+      "name": "635",
+      "id": 2
+    },
+    {
+      "type": "Stop",
+      "name": "Universam",
+      "id": 3
+    },
+    {
+      "type": "Route",
+      "from": "Biryulyovo Zapadnoye",
+      "to": "Universam",
+      "id": 4
+    },
+    {
+      "type": "Route",
+      "from": "Biryulyovo Zapadnoye",
+      "to": "Prazhskaya",
+      "id": 5
+    }
+  ]
 }
 
+Пример JSON-файла на выходе:
 
-Пример карты на выходе:
-![image](https://user-images.githubusercontent.com/48561882/112407027-5b999e80-8d26-11eb-9809-6d907d048053.png)
+[
+    {
+        "curvature": 1.42963,
+        "unique_stop_count": 3,
+        "stop_count": 4,
+        "request_id": 1,
+        "route_length": 5990
+    },
+    {
+        "curvature": 1.30156,
+        "unique_stop_count": 3,
+        "stop_count": 5,
+        "request_id": 2,
+        "route_length": 11570
+    },
+    {
+        "request_id": 3,
+        "buses": [
+            "297",
+            "635"
+        ]
+    },
+    {
+        "total_time": 11.235,
+        "items": [
+            {
+                "time": 6,
+                "type": "Wait",
+                "stop_name": "Biryulyovo Zapadnoye"
+            },
+            {
+                "span_count": 2,
+                "bus": "297",
+                "type": "Bus",
+                "time": 5.235
+            }
+        ],
+        "request_id": 4
+    },
+    {
+        "total_time": 24.21,
+        "items": [
+            {
+                "time": 6,
+                "type": "Wait",
+                "stop_name": "Biryulyovo Zapadnoye"
+            },
+            {
+                "span_count": 2,
+                "bus": "297",
+                "type": "Bus",
+                "time": 5.235
+            },
+            {
+                "time": 6,
+                "type": "Wait",
+                "stop_name": "Universam"
+            },
+            {
+                "span_count": 1,
+                "bus": "635",
+                "type": "Bus",
+                "time": 6.975
+            }
+        ],
+        "request_id": 5
+    }
+]
